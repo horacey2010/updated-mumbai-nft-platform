@@ -177,7 +177,6 @@ export default function Home() {
           <div class="container">
             <h2 class="title">
               <div class="has-text-white has-text-centered">
-                <br></br><br></br>
                 The Ultimate NFT Platform on Mumbai Testnet with Web3 Technologies
               </div>
             </h2>
