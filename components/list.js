@@ -337,7 +337,7 @@ export default function List({ address }) {
                 If you rent NFT in our Rentable NFTs, you get double HAT reward !!
               </div>
             </h2>
-            <h2 class="subtitle mt-2">
+            <h2 class="title mt-2">
               <div class="has-text-link">
                 <b>ERC721</b>              
               </div>
@@ -457,8 +457,8 @@ export default function List({ address }) {
                     </div>
                 </div>
             </ModalLoading>
-            
-            <h2 class="subtitle mt-2">
+            <br></br>
+            <h2 class="title mt-2">
               <div class="has-text-link">
                 <b>ERC1155</b>              
               </div>
