@@ -276,7 +276,7 @@ export default function Home() {
               <div class="column is-half"></div>
             </div>
             <br></br><br></br>
-            <br></br><br></br>
+            
             {
               page=='list' 
                 ? <List 
