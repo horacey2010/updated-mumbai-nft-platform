@@ -310,13 +310,13 @@ export default function MyNFT({ address }) {
           <div class="has-text-white">
             {
               displayNFTs == "part"
-                ? <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="part" checked onChange={e => setDisplatNFTs(e.target.value)}/> Show NFTs minted on this platform</>
-                : <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="part" onChange={e => setDisplatNFTs(e.target.value)}/> Show NFTs minted on this platform</>
+                ? <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="part" checked onChange={e => setDisplatNFTs(e.target.value)}/> Show NFTs you minted on this platform</>
+                : <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="part" onChange={e => setDisplatNFTs(e.target.value)}/> Show NFTs you minted on this platform</>
             } &nbsp;&nbsp;
             {
               displayNFTs == "all"
-                ? <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="all" checked onChange={e => setDisplatNFTs(e.target.value)}/> Show all NFTs</>
-                : <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="all" onChange={e => setDisplatNFTs(e.target.value)}/> Show all NFTs</>
+                ? <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="all" checked onChange={e => setDisplatNFTs(e.target.value)}/> Show all your NFTs</>
+                : <><input class="radio is-small is-rounded" type="radio" name="displayNFTs" value="all" onChange={e => setDisplatNFTs(e.target.value)}/> Show all your NFTs</>
             }
           </div>
         </h2>
