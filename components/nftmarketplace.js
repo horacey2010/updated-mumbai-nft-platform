@@ -318,7 +318,7 @@ export default function Horace_Marketplace({ address }) {
         </h2>
         <h2 class="subtitle mt-4">
           <div class="has-text-white">
-          Buy NFTs here, for selling your NFTs please refer to <b>My NFTs</b> and select your NFT !!            </div>
+          Buy NFTs here, for selling your NFTs please refer to <b>My NFTs</b> and select your NFT for sale !!            </div>
         </h2>
         { allMarketplaceItems.map((columns, j) => {
             if ((j % 4) == 0) {
