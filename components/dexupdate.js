@@ -16,7 +16,7 @@ export default function Dexupdate({ address }) {
     const [horaceToken, setHoraceToken] = useState()
     const [totalLiquidty, setTotalLiquidty] = useState()
     const [horaceTokenLiquidty, setHoraceTokenLiquidty] = useState()
-    const [yourLiquidity, setYourLiquidity] = useState()
+    const [yourLiquidity, setYourLiquidity] = useState(0)
     const [swapType, setSwapType] = useState(1)
     const [swapAmount, setSwapAmount] = useState()
     const [swapOutput, setSwapOutput] = useState()
