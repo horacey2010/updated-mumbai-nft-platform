@@ -503,13 +503,14 @@ export default function List({ address }) {
                     )
                 }
             })}
-            <h2 class="subtitle mt-2">
+            <br></br>
+            <h2 class="title mt-2">
               <div class="has-text-link">
                 <b>Mint Your Own NFT</b>              
               </div>
             </h2>
             <h2 class="subtitle">
-              <div class="has-text-white is-size-6">
+              <div class="has-text-white is-size-5">
                 <b>It cost 0.2 Matic to mint a NFT and get HAT reward!!</b>              
               </div>
             </h2>
