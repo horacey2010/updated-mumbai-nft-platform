@@ -305,15 +305,17 @@ export default function Home() {
                           : <></>
                       
             }
+            <footer class="footer">
+              <div class="content has-text-centered">
+                <p>
+                  <strong>NFT Platform</strong> by Pui Kei Yuen. 
+                </p>
+                <p>Contact: horacey2010@gmail.com &nbsp;&nbsp; Tel: 852-61126010</p>
+              </div>
+            </footer>        
+                        
           </div>
-          <footer class="footer">
-            <div class="content has-text-centered">
-              <p>
-                <strong>NFT Platform</strong> by Pui Kei Yuen. 
-              </p>
-              <p>Contact: horacey2010@gmail.com &nbsp;&nbsp; Tel: 852-61126010</p>
-            </div>
-          </footer>        
+
         </section>
     </>
   )
