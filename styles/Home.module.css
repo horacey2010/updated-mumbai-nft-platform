@@ -127,3 +127,7 @@
     filter: invert(1);
   }
 }
+
+.blur {
+  filter: blur(3px);
+}

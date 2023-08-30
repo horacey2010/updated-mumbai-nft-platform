@@ -15,12 +15,16 @@ a {
   box-sizing: border-box;
 }
 
+.blur {
+  filter: blur(3px);
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
   body {
-    color: white;
+    color: black;
     background: black;
   }
 }

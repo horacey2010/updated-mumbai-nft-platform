@@ -6,12 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "compile": "solcjs --abi --include-path  node_modules/ --base-path . blockchain/contracts/DexUpdate.sol --output-dir blockchain/build"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@openzeppelin/contracts": "^4.9.3",
+    "bulma": "^0.9.4",
     "next": "13.4.12",
+    "nft.storage": "^7.1.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "solc": "^0.8.21",
+    "web3": "^1.7.4"
   },
   "devDependencies": {
     "eslint": "8.46.0",
