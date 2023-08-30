@@ -328,7 +328,7 @@ export default function List({ address }) {
         <>
             <h2 class="title">
               <div class="has-text-white">
-                List of Art Image
+                List of Art Images
               </div>
             </h2>
             <h2 class="subtitle mt-4">
