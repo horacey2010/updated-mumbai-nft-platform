@@ -13,6 +13,7 @@ import Marketplace from '../components/nftmarketplace'
 import StakeNFT from '../components/stakenft'
 import Rentable from '../components/rentable'
 import DexUpdate from '../components/dexupdate'
+import Collateral from '../components/collateralplatform'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -272,10 +273,23 @@ export default function Home() {
                   </div> 
                 </a></Link>
               </div>
-              <div class="column is-half"></div>
+              <div class="column">
+                <Link legacyBehavior href="?page=collateral"><a>
+                  <div class="card">
+                    <div class="card-content">
+                      <p class="title has-text-info">
+                          <b>Collateral</b>
+                      </p>
+                      <p class="subtitle">
+                          Stake your NFTs as collateral.
+                      </p>
+                    </div>
+                  </div> 
+                </a></Link>
+              </div>
+              <div class="column is-one-quarter"></div>
             </div>
             <br></br><br></br>
-            
             {
               page=='list' 
                 ? <List 
@@ -301,20 +315,25 @@ export default function Home() {
                           ? <DexUpdate
                               address={address}
                             />
-                          : <></>
+                          : page=='collateral'
+                            ? <Collateral
+                                address={address}
+                              />
+                            : <></>
                       
             }
+
             <footer class="footer">
               <div class="content has-text-centered">
                 <p>
-                  <strong>NFT Platform</strong> by Pui Kei Yuen. 
+                  <strong>NFT Platform</strong> by Pui Kei Yuen.<br></br> 
+                  Contact: horacey2010@gmail.com &nbsp;&nbsp; Tel: 852-61126010
                 </p>
-                <p>Contact: horacey2010@gmail.com &nbsp;&nbsp; Tel: 852-61126010</p>
+                
               </div>
             </footer>        
-                        
+            
           </div>
-
         </section>
     </>
   )
