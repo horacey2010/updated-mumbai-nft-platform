@@ -7,6 +7,7 @@ import HoracePlatform from '../blockchain/horaceplatform'
 import HoraceToken from '../blockchain/horacetoken'
 import HoraceMarketplace from '../blockchain/horacemarketplace'
 import HoraceStakeNFT from '../blockchain/horacestakenft'
+import HoraceCollateral from '../blockchain/collateralplatform'
 import Modal from '../components/Modal'
 import ModalLoading from '../components/ModalLoading'
 import ModalHistory from '../components/ModalHistory' 
@@ -36,8 +37,11 @@ export default function MyNFT({ address }) {
     const [showModalLoading, setShowModalLoading] = useState(false)
     const [displayNFTs, setDisplatNFTs] = useState("part")
     const [tradingRecords, setTradingRecords] = useState([])
-    const [amount, setAmount] = useState(0)
-    const [stakeAmount, setStakeAmount] = useState(0)
+    const [amount, setAmount] = useState(1)
+    const [tokenAmount, setTokenAmount] = useState(0)
+    const [period, setPeriod] = useState(1)
+    const [loan, setLoan] = useState(0)
+    const [updateLoan, setUpdateLoan] = useState(0)
     const [contractType, setContractType] = useState("ERC-721")
 
     
@@ -106,6 +110,12 @@ export default function MyNFT({ address }) {
 
     const displayModal = async (_item, _image, _tokenUri, _attributes, _name, _description, _tokenId, _nftContractAddress, _balance, _job) => {
       setImage(_image)
+      let _period = 1
+      setPeriod(_period)
+      let horaceCollateral = HoraceCollateral(web3)
+      let _loan = await horaceCollateral.methods.calculatePriceCollateral(_nftContractAddress, _tokenId, _period).call()
+      setLoan(_loan[0])
+      setUpdateLoan(_loan[0])
       setTokenUri(_tokenUri)
       if (_attributes) {
         setAttributes(_attributes)
@@ -124,7 +134,7 @@ export default function MyNFT({ address }) {
       if (contractType[0] == true) {
         console.log("ERC721")
         setContractType("ERC-721")
-        setAmount(0)
+        setAmount(1)
       } 
       if (contractType[1] == true) {
         console.log("ERC1155")
@@ -136,6 +146,8 @@ export default function MyNFT({ address }) {
       }
       setJob(_job)
       setShowModal(true)
+
+      console.log("_loan", _loan)
       console.log("_image", _image)
       console.log("_tokenUri", _tokenUri)
       console.log("_name", _name)
@@ -153,11 +165,19 @@ export default function MyNFT({ address }) {
       setPrice(event.target.value)
     }
 
-    const getStakeAmount = event => {
-      setStakeAmount(event.target.value)
+    const getTokenAmount = event => {
+      setTokenAmount(event.target.value)
     }
 
-
+    const getPeriod = async event => {
+      event.preventDefault()
+      setPeriod(event.target.value)
+      let horaceCollateral = HoraceCollateral(web3)
+      let _loan = await horaceCollateral.methods.calculatePriceCollateral(nftContractAddress, tokenId, event.target.value).call()
+      setLoan(_loan[0])
+      setUpdateLoan(_loan[0])
+  }
+  
     const listToMarketplace = async (_nftContractAddress, _tokenId) => {
       if (price > 0) {
         setShowModal(false)
@@ -207,12 +227,69 @@ export default function MyNFT({ address }) {
       }
   }
 
-
-  const stakeNFT = async (_nftContractAddress, _tokenId, _stakeAmount) => {
+  const collateral = async (_nftContractAddress, _tokenId, _tokenAmount) => {
     console.log("tokenId", _tokenId)
     console.log("nfttoken address", _nftContractAddress)
     console.log("NFT balance", nftBalance)
-    if (Number(_stakeAmount) <= Number(amount)) {
+    console.log("tokenAmount", _tokenAmount)
+    console.log("amount", amount)
+    console.log("period", period)
+      let horaceCollateral = HoraceCollateral(web3)
+      let horaceToken = HoraceToken(web3)
+      let nftContract
+      let contractType = await horaceCollateral.methods.checkContractType(_nftContractAddress).call()
+      console.log("contract type", contractType)
+      try {
+        // let rented = await horaceCollateral.methods.checkHaveRented().call({ from: address })
+        // console.log("rented", rented)
+        if (contractType[1] == true) {
+          if (Number(tokenAmount) <= Number(amount) && (Number(tokenAmount) != 0)) {
+            setShowModal(false)
+            setShowModalLoading(true)
+            nftContract = new web3.eth.Contract(erc1155ContractAbi, _nftContractAddress, )
+            await nftContract.methods.setApprovalForAll(horaceCollateral.options.address, true).send({ from: address })
+            await horaceCollateral.methods.collateralToPlatform(_nftContractAddress, _tokenId, tokenAmount, period).send({ from: address })
+            let counter = await horaceCollateral.methods.calculatePriceCollateral(horaceCollateral.options.address, 2).call()
+            console.log("counter", counter)
+            console.log("tokenAmount", Number(tokenAmount))
+            console.log("amount", Number(amount))
+          } else {
+            alert(
+              `Collateral amount must be smaller or equal to ${nftBalance} `,
+            );
+          }
+        } else if (contractType[0] == true) {
+          setShowModal(false)
+          setShowModalLoading(true)
+          console.log("period", period)
+          nftContract = new web3.eth.Contract(nftContractAbi, _nftContractAddress)
+          console.log("period", period)
+          let loan = await horaceCollateral.methods.calculatePriceCollateral(_nftContractAddress, _tokenId, period).call()
+          console.log("loan", web3.utils.fromWei(loan[0].toString()))      //1000000000000000000
+          console.log("repayment", web3.utils.fromWei(loan[1].toString())) //200000000000000000
+          let type = await horaceCollateral.methods.checkContractType(_nftContractAddress).call()
+          console.log("erc721", type[0])
+          console.log("erc1155", type[1])
+          let contractBalance = await horaceToken.methods.balanceOf(horaceCollateral.options.address).call()
+          console.log("contract balance", contractBalance.toString())
+          console.log("contract address", horaceCollateral.options.address)
+          await nftContract.methods.approve(horaceCollateral.options.address, _tokenId).send({ from: address })
+          await horaceCollateral.methods.collateralToPlatform(_nftContractAddress, _tokenId, 0, period).send({ from: address })
+        }
+        loadMyNFTData()
+        setShowModalLoading(false)
+      } catch (error) {
+        setShowModalLoading(false) 
+        setShowModal(false)
+        console.log("error", error)
+      }
+  }
+
+  const stakeNFT = async (_nftContractAddress, _tokenId, _tokenAmount) => {
+    console.log("tokenId", _tokenId)
+    console.log("nfttoken address", _nftContractAddress)
+    console.log("NFT balance", nftBalance)
+    if (Number(_tokenAmount) <= Number(amount)) {
       setShowModal(false)
       setShowModalLoading(true)
       let stakenft = HoraceStakeNFT(web3)
@@ -223,7 +300,7 @@ export default function MyNFT({ address }) {
         if (contractType[1] == true) {
           nftContract = new web3.eth.Contract(erc1155ContractAbi, _nftContractAddress, )
           await nftContract.methods.setApprovalForAll(stakenft.options.address, true).send({ from: address })
-          await stakenft.methods.stakeToNFTPlatform(_nftContractAddress, _tokenId, stakeAmount).send({ from: address })
+          await stakenft.methods.stakeToNFTPlatform(_nftContractAddress, _tokenId, tokenAmount).send({ from: address })
         } else if (contractType[0] == true) {
           nftContract = new web3.eth.Contract(nftContractAbi, _nftContractAddress)
           await nftContract.methods.approve(stakenft.options.address, _tokenId).send({ from: address })
@@ -351,6 +428,7 @@ export default function MyNFT({ address }) {
                                   <footer class="card-footer">
                                     <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "marketplace")}>Trade</a>
                                     <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "stakenft")}>Stake</a>
+                                    <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "collateral")}>Collateral</a>
                                     <a  class="card-footer-item" onClick={() => displayModalHistory(item.id.tokenId, item.contract.address)}>Records</a>
                                   </footer>                                                            
                               </div>
@@ -391,6 +469,7 @@ export default function MyNFT({ address }) {
                                   <footer class="card-footer">
                                     <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "marketplace")}>Trade</a>
                                     <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "stakenft")}>Stake</a>
+                                    <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "collateral")}>Collateral</a>
                                     <a  class="card-footer-item" onClick={() => displayModalHistory(item.id.tokenId, item.contract.address)}>Records</a>
                                   </footer>                                                            
                                 </div>
@@ -430,6 +509,7 @@ export default function MyNFT({ address }) {
                                 <footer class="card-footer">
                                   <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "marketplace")}>Trade</a>
                                   <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "stakenft")}>Stake</a>
+                                  <a  class="card-footer-item" onClick={() => displayModal(item, item.media[0].gateway, item.tokenUri.gateway, item.metadata.attributes, item.metadata.name, item.metadata.description, item.id.tokenId, item.contract.address, item.balance, "collateral")}>Collateral</a>
                                   <a  class="card-footer-item" onClick={() => displayModalHistory(item.id.tokenId, item.contract.address)}>Records</a>
                                 </footer>                                                            
                               </div>
@@ -470,7 +550,25 @@ export default function MyNFT({ address }) {
               }
               <br></br>
               <strong>Contract Address: </strong>{nftContractAddress}<br></br>
+              {
+                job == "collateral"
+                  ?
+                    <>
+                      <strong>Period:</strong> &nbsp;
+                      <div class="select is-small" id="rentPeriod" onChange={getPeriod}>
+                          <select>
+                              <option value="1" selected>30 days</option>
+                              <option value="2">60 days</option>
+                              <option value="3">90 days</option>
+                          </select>
+                      </div>&nbsp;&nbsp;
+                      <strong>Loan: </strong>{web3.utils.fromWei(updateLoan.toString())} HAT
+                    </>
+                  : <></>
+              }
+
             </div>
+
           </div>
           <div class="columns">
             <div class="column is-two-fifth"></div>
@@ -505,13 +603,36 @@ export default function MyNFT({ address }) {
                               <label class="label ml-6">Amount: </label>
                             </div>
                             <div class="column is-one-fifths mr-3">
-                              <input class="input is-small is-rounded mr-2" type="text" onChange={getStakeAmount} placeholder='Enter amount to stake' />
+                              <input class="input is-small is-rounded mr-2" type="text" onChange={getTokenAmount} placeholder='Enter amount to stake' />
                             </div>
                           </>
                         : <></>
                     }
                     <div calss="column is-one-fifth">
-                      <button class="button is-primary is-small is-rounded mr-4 mt-3" onClick={() => stakeNFT(nftContractAddress, tokenId, stakeAmount)}>Confirm</button>
+                      <button class="button is-primary is-small is-rounded mr-4 mt-3" onClick={() => stakeNFT(nftContractAddress, tokenId, tokenAmount)}>Confirm</button>
+                    </div>
+                  </>
+                : <></>
+            } 
+            {
+              job == "collateral"
+                ?
+                  <>
+                    {
+                      contractType == "ERC-1155"
+                        ?
+                          <>
+                            <div class="column is-one-fifth">
+                              <label class="label ml-6">Amount: </label>
+                            </div>
+                            <div class="column is-one-fifths mr-3">
+                              <input class="input is-small is-rounded mr-2" type="text" onChange={getTokenAmount} placeholder='Enter amount to stake' />
+                            </div>
+                          </>
+                        : <></>
+                    }
+                    <div calss="column is-one-fifth">
+                      <button class="button is-primary is-small is-rounded mr-4 mt-3" onClick={() => collateral(nftContractAddress, tokenId, tokenAmount)}>Confirm</button>
                     </div>
                   </>
                 : <></>
