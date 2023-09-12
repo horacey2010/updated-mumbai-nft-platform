@@ -281,7 +281,7 @@ export default function Home() {
                           <b>Collateral</b>
                       </p>
                       <p class="subtitle">
-                          Stake your NFTs as collateral.
+                          Use your NFTs as collateral.
                       </p>
                     </div>
                   </div> 
