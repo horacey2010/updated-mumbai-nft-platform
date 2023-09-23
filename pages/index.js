@@ -128,7 +128,7 @@ export default function Home() {
   return (
   <>
         <div class="container">
-          <nav class="navbar is-black" role="navigation" aria-label="main navigation">
+          <nav class="navbar has-background-grey-darker" role="navigation" aria-label="main navigation">
             <div id="navbarBasicExample" class="navbar-menu">
               <div class="navbar-start">
 
@@ -143,8 +143,8 @@ export default function Home() {
               <div class="navbar-end">
                 <div class="navbar-item">
                   {address.length > 0
-                    ? `HAT Balance: ${horaceTokenBalance}`
-                    : "HAT:"
+                    ? <div class="has-text-white is-size-6">HAT Balance: `${horaceTokenBalance}`</div>
+                    : <div class="has-text-white is-size-6">HAT:</div>
                   }
                 </div>
                 {
