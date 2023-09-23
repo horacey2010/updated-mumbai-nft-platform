@@ -192,10 +192,10 @@ export default function Home() {
                 <div class="card">
                   <div class="card-content">
                     <p class="title has-text-info">
-                        <b>List of Art Images</b>
+                        <b>Mint NFTs </b>
                     </p>
                     <p class="subtitle">
-                      Tons of images to mint.
+                      Tons of NFTs to mint.
                     </p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function Home() {
                           <b>Avatars</b>
                       </p>
                       <p class="subtitle">
-                          Avatars for Rnet.
+                          Avatars for Rent.
                       </p>
                     </div>
                   </div>  
@@ -281,7 +281,7 @@ export default function Home() {
                           <b>Collateral</b>
                       </p>
                       <p class="subtitle">
-                          Use your NFTs as collateral.
+                          Stake your NFTs as collateral.
                       </p>
                     </div>
                   </div> 
