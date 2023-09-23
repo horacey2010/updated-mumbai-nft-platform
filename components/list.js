@@ -3,8 +3,7 @@ import 'bulma/css/bulma.css' // npm install bulma
 import styles from '../styles/Home.module.css'
 import Web3 from 'web3' // npm install web3@1.7.4
 import HoracePlatform from '../blockchain/horaceplatform'
-import HoraceERC1155NFT from '../blockchain/horaceerc1155nft'
-import HoraceNFT from '../blockchain/horacenft'
+import SourceMinter from '../blockchain/sourceminter'
 import Modal from '../components/Modal'
 import ModalLoading from '../components/ModalLoading'
 
@@ -41,8 +40,11 @@ export default function List({ address }) {
     const [ownName, setOwnName] = useState()
     const [ownDescription, setOwnDescription] = useState()
     const [mintFee, setMintFee] = useState()
+    const [mintFeeSepolia, setMintFeeSepolia] = useState()
     const [amount, setAmount] = useState(0)
     const [erc1155TokenIdCounter, setERC1155TokenIdCounter] = useState() // for changing the uploaded file name in ERC1155
+    const [destinationChainSelector, setDestinationChainSelector] = useState("16015286601757825753")
+    const [receiver, setReceiver] = useState("0x23a20B0E9A10b9b4dfeF5744aB46993a0BDB90aB")
 
     useEffect(() => {
         // if (address) {
@@ -288,6 +290,57 @@ export default function List({ address }) {
         setOwnDescription(event.target.value)
     }
 
+    const mintSepolia = async () => {
+        if (address) {
+            if (ownName != null && ownDescription != null && mediaFile != "" ) {
+                try {
+                    setShowModalLoading(true)
+                    const imageFile = new File([ mediaFile ], nftStorageType, { type: nftStorageImageType })
+    
+                    const metadata = await nftstorageclient.store({
+                        name: ownName,
+                        description: ownDescription,
+                        image: imageFile
+                    })
+    
+                    console.log('metadata ', metadata.url)
+                    let _sourceminter = SourceMinter(web3)
+                    let _mintFeeSepolia = await web3.utils.toWei("1")
+                    await _sourceminter.methods.mint(destinationChainSelector, receiver, 1, metadata.url).send({ from: address, value: _mintFeeSepolia.toString() })
+                    let latest_block = await web3.eth.getBlockNumber()
+                    let historical_block = latest_block - 1
+                    console.log("latest block", latest_block)
+                    console.log("historical block", historical_block)
+                    const events = await _sourceminter.getPastEvents(
+                        'MessageSent',
+                        { fromBlock: historical_block, toBlock: latest_block }
+                    )
+                    console.log("Events", events)
+                    console.log("Events messageId", events[0]['returnValues']['messageId'])
+                    console.log("messageId length", events[0]['returnValues']['messageId'].length)
+
+                    document.getElementById("name").value="";
+                    document.getElementById("description").value="";
+                    document.getElementById("choose-file").value="";
+                    setImagePreviewSrc()
+                    loadListPlatformData()
+                    setShowModalLoading(false)
+                } catch (error) {
+                    console.log(error) 
+                    loadListPlatformData()
+                    setShowModalLoading(false)         
+                }
+            } else {
+                setShowModalLoading(false)
+                alert(`Please provide Name, Description and Media File !!`,); 
+            }
+        } else {
+            alert(
+            `Please connect Mumbai Testnet`,
+            );
+        }
+    }
+
   
     const uploadNFTContentHandler = async (_isRoyalty) => {
         if (address) {
@@ -511,7 +564,11 @@ export default function List({ address }) {
             </h2>
             <h2 class="subtitle">
               <div class="has-text-white is-size-5">
-                <b>It cost 0.2 Matic to mint a NFT and get HAT reward!!</b>              
+                <b>It cost 0.2 Matic to mint a NFT and get HAT reward!!</b><br></br>
+                <b>Cost 1 Matic to mint NFT to Sepolia Testnet</b>         
+              </div>
+              <div class="has-text-danger is-size-6">
+                *The process may take around 30 minutes. 
               </div>
             </h2>
             <div class="columns">
@@ -538,13 +595,13 @@ export default function List({ address }) {
                                         <div class="field">
                                             <label class="label">Name</label>
                                             <div class="control">
-                                                <input class="input is-small" type="name" placeholder="Name..." onChange={getName} />
+                                                <input class="input is-small" type="name" id="name" placeholder="Name..." onChange={getName} />
                                             </div>
                                         </div> 
                                         <div class="field">
                                             <label class="label">Description</label>
                                             <div class="control">
-                                                <input class="input is-small" type="name" placeholder="Description..." onChange={getDescription} />
+                                                <input class="input is-small" type="name" id="description" placeholder="Description..." onChange={getDescription} />
                                             </div>
                                         </div>
                                         <br></br>
@@ -552,7 +609,8 @@ export default function List({ address }) {
                                             <div class="control">
                                                 <>
                                                     <button class="button is-link is-rounded is-small mr-5" onClick={() => uploadNFTContentHandler(false)}> Mint NFT </button>
-                                                    <button class="button is-link is-rounded is-small" onClick={() => uploadNFTContentHandler(true)}>Mint with Royalty</button>
+                                                    <button class="button is-link is-rounded is-small mr-5" onClick={() => uploadNFTContentHandler(true)}>Mint with Royalty</button>
+                                                    <button class="button is-link is-rounded is-small" onClick={() => mintSepolia()}>Mint NFT to Sepolia</button>
                                                 </>    
                                             </div>
                                         </div> 
