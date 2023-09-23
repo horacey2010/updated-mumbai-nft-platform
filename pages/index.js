@@ -141,12 +141,13 @@ export default function Home() {
               </div>
 
               <div class="navbar-end">
-                <div class="navbar-item">
+                <div class="navbar-item has-text-white is-size-6">
                   {address.length > 0
-                    ? <div class="has-text-white is-size-6">HAT Balance: `${horaceTokenBalance}`</div>
-                    : <div class="has-text-white is-size-6">HAT:</div>
+                    ? `HAT Balance: ${horaceTokenBalance}` 
+                    : `HAT:`
                   }
                 </div>
+
                 {
                   haveRented[0]
                     ? 
