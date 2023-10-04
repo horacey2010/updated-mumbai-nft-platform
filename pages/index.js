@@ -153,7 +153,7 @@ export default function Home() {
                     ? 
                       <>
                         <div class="navbar-item">
-                          <img src={avatar} alt="Placeholder image" width="30"/>
+                          <img src={avatar} alt="Placeholder image" width="35"/>
                         </div>
                       </>
                     : <></>
